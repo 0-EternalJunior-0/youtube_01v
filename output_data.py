@@ -3,7 +3,7 @@ num_videos_to_edit = 8
 '1k = 1920x1080'
 '2k = 2560x1440'
 '4к = 3840x2160'
-width_height = [2560, 1440]
+width_height = [1920, 1080]
 
 url_audi_YouTube_topic = [
         {'url': 'https://www.youtube.com/watch?v=_mEmWVYyvLU', '_topic': 'city park'},

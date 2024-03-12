@@ -25,7 +25,7 @@ def main():
 
         print(directory)
         # Пошук відео на Pexels
-        data_stock_videos = search_for_stock_videos(query=topic, api_key=api_key_pexels, it=5000, time_minimum=30, width_height=width_height)
+        data_stock_videos = search_for_stock_videos(query=topic, api_key=api_key_pexels, it=2000, time_minimum=30, width_height=width_height)
         print(data_stock_videos)
 
         # Отримання розміру з максимального розміру відображення
