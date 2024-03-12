@@ -11,6 +11,5 @@ youtube_uploader_selenium
 selenium_firefox
 selenium
 pydrive
-zipfile
 pydrive
 oauth2client
