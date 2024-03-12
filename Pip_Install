@@ -1,0 +1,16 @@
+moviepy
+typing
+requests
+pytube
+google
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+youtube_uploader_selenium
+selenium_firefox
+selenium
+pydrive
+zipfile
+pydrive
+oauth2client

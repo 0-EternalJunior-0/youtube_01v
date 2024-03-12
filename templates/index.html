@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your App</title>
+</head>
+<body>
+    <h1>Адаптація відо пі дпотреби </h1>
+
+    <!-- Tabs -->
+    <div>
+        <button onclick="openTab('youtube_audio')">Робота з ютубом (Скачати музику)</button>
+        <button onclick="openTab('pexels_video')">Робота з відо (Скачати відео)</button>
+    </div>
+
+<!-- Text Tab -->
+<div id="youtube_audio" class="tab-content">
+    <h2>URL:</h2>
+    <div id="inputContainer">
+        <div id="inputs"></div>
+        <div>
+            <button onclick="addInput()">Додати рядок</button>
+            <button onclick="removeInput()">Видалити рядок</button>
+        </div>
+    </div>
+    <p></p>
+    <button onclick="processTextData()">Перейти далі (Скачування почнеця на фоні)</button>
+</div>
+
+<!-- JavaScript for Tabs -->
+<script>
+    function addInput() {
+        var inputContainer = document.getElementById("inputs");
+        var newInput = document.createElement("textarea");
+        newInput.className = "dataInput";
+        newInput.rows = "4";
+        newInput.cols = "50";
+        inputContainer.insertBefore(newInput, inputContainer.firstChild);
+    }
+
+    function removeInput() {
+        var inputContainer = document.getElementById("inputs");
+        var inputs = inputContainer.getElementsByClassName("dataInput");
+        if (inputs.length > 1) {
+            inputContainer.removeChild(inputs[0]);
+        }
+    }
+
+    function processTextData() {
+        var inputs = document.getElementsByClassName("dataInput");
+        var data = Array.from(inputs).map(input => input.value);
+
+        // Тут ви можете використовувати 'data' для подальшої обробки
+        console.log("Received data:", data);
+        // Далі ви можете використати AJAX для відправлення даних на сервер
+    }
+</script>
+
+    <!-- Video Tab -->
+    <div id="pexels_video" class="tab-content">
+        <h2>Videos:</h2>
+        <ul id="videoList">
+            <!-- Video items will be added dynamically here -->
+        </ul>
+        <button onclick="downloadSelectedVideos()">Download Selected Videos</button>
+    </div>
+
+</body>
+</html>

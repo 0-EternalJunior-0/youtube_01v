@@ -1,0 +1,3 @@
+api_key_pexels = 'Aj3Eh7hGRp2q8lwI8W5rwvsTZ3mHVGTDG0oZDCsbtBzYqyZJ6cYE3LeC'
+
+api_key_gpt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOTE0ZjE1ZWUtYTdkZS00NTkwLWE2ODQtYThhYzY5YWE0YjY3IiwidHlwZSI6ImFwaV90b2tlbiJ9.boq81-1VWmPPJJjl4fj2qaVsWjQFNtccuxV42m62Epk'
