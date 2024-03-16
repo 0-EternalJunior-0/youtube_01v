@@ -16,6 +16,50 @@ def authenticate_drive(credentials_path):
     drive = GoogleDrive(gauth)
     return drive
 
+
+def upload_large_file_to_drive(drive, local_file_path, parent_id='root', chunk_size=30 * 1024 * 1024 * 1024):
+    # Get file name and size
+    file_name = os.path.basename(local_file_path)
+    file_size = os.path.getsize(local_file_path)
+
+    # Calculate number of chunks
+    num_chunks = file_size // chunk_size + (1 if file_size % chunk_size != 0 else 0)
+
+    # Create a folder on Drive to store the chunks
+    folder_metadata = {
+        'title': file_name,
+        'mimeType': 'application/vnd.google-apps.folder',
+        'parents': [{'id': parent_id}]
+    }
+    folder = drive.CreateFile(folder_metadata)
+    folder.Upload()
+
+    # Upload chunks
+    with open(local_file_path, 'rb') as file:
+        for i in range(num_chunks):
+            start_byte = i * chunk_size
+            end_byte = min((i + 1) * chunk_size, file_size)
+            chunk_data = file.read(chunk_size)
+
+            # Create chunk file
+            chunk_file_name = f'{file_name}.part{i + 1}'
+            chunk_file_path = os.path.join('/tmp', chunk_file_name)
+            with open(chunk_file_path, 'wb') as chunk_file:
+                chunk_file.write(chunk_data)
+
+            # Upload chunk file
+            chunk_metadata = {
+                'title': chunk_file_name,
+                'parents': [{'id': folder['id']}]
+            }
+            chunk = drive.CreateFile(chunk_metadata)
+            chunk.SetContentFile(chunk_file_path)
+            chunk.Upload()
+
+            # Remove temporary chunk file
+            os.remove(chunk_file_path)
+
+    print(f'File "{file_name}" uploaded successfully.')
 def upload_to_drive(drive, local_dir_path, zip_dir):
     CHUNK_SIZE = 100 * 1024 * 1024  # 100 MB chunk size
     if zip_dir == 1:
@@ -28,14 +72,7 @@ def upload_to_drive(drive, local_dir_path, zip_dir):
                         arcname = os.path.relpath(file_path, local_dir_path)
                         zip_file.write(file_path, arcname)
 
-            file_drive = drive.CreateFile({'title': zip_file_name})
-            file_drive.SetContentFile(zip_file_name)
-
-            try:
-                file_drive.Upload()
-                print(f"Архів '{zip_file_name}' успішно завантажено")
-            except Exception as e:
-                print(f"Помилка завантаження архіву '{zip_file_name}': {e}")
+            upload_large_file_to_drive(drive, zip_file_name)
 
             try:
                 os.remove(zip_file_name)
@@ -48,32 +85,26 @@ def upload_to_drive(drive, local_dir_path, zip_dir):
         parent_id = 'root'
         folder_name = os.path.basename(local_dir_path)
         folder_drive = drive.CreateFile(
-            {'title': folder_name, 'parents': [{'id': parent_id}],
-             'mimeType': 'application/vnd.google-apps.folder'})
+            {'title': folder_name, 'parents': [{'id': parent_id}], 'mimeType': 'application/vnd.google-apps.folder'})
         folder_drive.Upload()
         folder_id = folder_drive['id']
 
         for item in os.listdir(local_dir_path):
             item_path = os.path.join(local_dir_path, item)
             if os.path.isfile(item_path):
-                # Split the file into chunks and upload each chunk
-                with open(item_path, 'rb') as f:
-                    while True:
-                        chunk = f.read(CHUNK_SIZE)
-                        if not chunk:
-                            break
-                        title = f"{item}-{f.tell() // CHUNK_SIZE + 1}.zip"
-                        file_drive = drive.CreateFile({'title': title, 'parents': [{'id': folder_id}]})
-                        file_drive.Upload()
-                        file_drive.content.write(chunk)
-                        file_drive.content.close()
-                        print(f"Chunk '{title}' uploaded successfully.")
+                file_drive = drive.CreateFile({'title': item, 'parents': [{'id': folder_id}]})
+                file_drive.SetContentFile(item_path)
+                try:
+                    file_drive.Upload()
+                    print(f"Файл '{item}' успішно завантажено")
+                except Exception as e:
+                    print(f"Помилка завантаження файлу '{item}': {e}")
             elif os.path.isdir(item_path):
                 upload_to_drive(drive, item_path, 2)
     elif zip_dir == 3:
-        if os.path.isfile(local_dir_path):  # Check if the path points to a file
+        if os.path.isfile(local_dir_path):  # Перевірка, чи шлях вказує на файл
             file_drive = drive.CreateFile()
-            file_drive.SetContentFile(local_dir_path)  # Set the file to upload
+            file_drive.SetContentFile(local_dir_path)  # Встановлення файлу для завантаження
             try:
                 file_drive.Upload()
                 print(f"Файл '{local_dir_path}' успішно завантажено на Google Drive")
