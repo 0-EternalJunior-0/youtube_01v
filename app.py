@@ -17,7 +17,7 @@ def authenticate_drive(credentials_path):
     return drive
 
 
-def upload_large_file_to_drive(drive, local_file_path, parent_id='root', chunk_size=30 * 1024 * 1024 * 1024):
+def upload_large_file_to_drive(drive, local_file_path, parent_id='root', chunk_size=30 * 1024 * 1024):
     # Get file name and size
     file_name = os.path.basename(local_file_path)
     file_size = os.path.getsize(local_file_path)
