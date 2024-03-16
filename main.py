@@ -18,15 +18,12 @@ def main():
         url = info['url']
         topic = info['_topic']
         directory = f"{_directory}/YoutubeVideo_{i}_{pr}"
-        print(directory)
         os.makedirs(directory, exist_ok=True)
 
         name = download_audio_from_youtube(url, output_path=directory)
 
-        print(directory)
         # Пошук відео на Pexels
         data_stock_videos = search_for_stock_videos(query=topic, api_key=api_key_pexels, it=2000, time_minimum=30, width_height=width_height)
-        print(data_stock_videos)
 
         # Отримання розміру з максимального розміру відображення
         max_size = max(data_stock_videos.keys(), key=lambda x: len(data_stock_videos[x]))
@@ -65,12 +62,10 @@ def main():
                 video_all = merge_videos(video_all, _video, audio=False)
                 time_vido_all += _video.duration
                 _video = None
-                print(fr'{time_vido_all}\{time_audio}')
                 break
             else:
                 video_all = merge_videos(video_all, _video, audio=False)
                 time_vido_all += _video.duration
-                print(fr'{time_vido_all}\{time_audio}')
                 _video = None
         print(f'Групування виконане відо триває = \t{time_vido_all}\n Аудіо файл становить = \t{time_audio}\n')
         list_video = None

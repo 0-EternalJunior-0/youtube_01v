@@ -16,10 +16,8 @@ def authenticate_drive(credentials_path):
     drive = GoogleDrive(gauth)
     return drive
 
-
 def upload_to_drive(drive, local_dir_path, zip_dir):
     if zip_dir == 1:
-        # Створіть архів, тільки якщо папка не порожня
         if os.listdir(local_dir_path):
             zip_file_name = "Zip_Rar.zip"
             with ZipFile(zip_file_name, 'w') as zip_file:
@@ -29,36 +27,74 @@ def upload_to_drive(drive, local_dir_path, zip_dir):
                         arcname = os.path.relpath(file_path, local_dir_path)
                         zip_file.write(file_path, arcname)
 
-            file_drive = drive.CreateFile({'title': os.path.basename(file_path)})
-            file_drive.Upload()
-            print(f"Файл '{zip_file_name}' Успішно завантажаний")
+            file_drive = drive.CreateFile({'title': zip_file_name})
+            file_drive.SetContentFile(zip_file_name)
 
-            # Видалення архіву після завантаження
-            os.remove(zip_file_name)
-            print(f"Архів '{zip_file_name}' видалено")
+            try:
+                file_drive.Upload()
+                print(f"Архів '{zip_file_name}' успішно завантажено")
+            except Exception as e:
+                print(f"Помилка завантаження архіву '{zip_file_name}': {e}")
+
+            try:
+                os.remove(zip_file_name)
+                print(f"Архів '{zip_file_name}' видалено")
+            except Exception as e:
+                print(f"Помилка видалення архіву '{zip_file_name}': {e}")
         else:
             print(f"Папка '{local_dir_path}' порожня. Нічого не завантажено.")
-    else:
-        # Загрузка всіх файлів без архівації
-        for foldername, subfolders, filenames in os.walk(local_dir_path):
-            for filename in filenames:
-                file_path = os.path.join(foldername, filename)
-                # Визначте відносний шлях від local_dir_path для визначення шляху на Google Drive
-                relative_path = os.path.relpath(file_path, local_dir_path)
-                # Створіть файл на Google Drive
-                file_drive = drive.CreateFile({'title': relative_path, 'parents': [{'id': 'root'}]})
-                # Завантажте вміст файлу
-                file_drive.Upload()
-                print(f"Файл '{relative_path}' Успішно завантажений на Google Drive")
+    elif zip_dir == 2:
+        parent_id = 'root'
+        folder_name = os.path.basename(local_dir_path)
+        folder_drive = drive.CreateFile(
+            {'title': folder_name, 'parents': [{'id': parent_id}], 'mimeType': 'application/vnd.google-apps.folder'})
+        folder_drive.Upload()
+        folder_id = folder_drive['id']
 
+        for item in os.listdir(local_dir_path):
+            item_path = os.path.join(local_dir_path, item)
+            if os.path.isfile(item_path):
+                file_drive = drive.CreateFile({'title': item, 'parents': [{'id': folder_id}]})
+                file_drive.SetContentFile(item_path)
+                try:
+                    file_drive.Upload()
+                    print(f"Файл '{item}' успішно завантажено")
+                except Exception as e:
+                    print(f"Помилка завантаження файлу '{item}': {e}")
+            elif os.path.isdir(item_path):
+                upload_to_drive(drive, item_path, 2)
+    elif zip_dir == 3:
+        if os.path.isfile(local_dir_path):  # Перевірка, чи шлях вказує на файл
+            file_drive = drive.CreateFile()
+            file_drive.SetContentFile(local_dir_path)  # Встановлення файлу для завантаження
+            try:
+                file_drive.Upload()
+                print(f"Файл '{local_dir_path}' успішно завантажено на Google Drive")
+            except Exception as e:
+                print(f"Помилка завантаження файлу '{local_dir_path}': {e}")
+        else:
+            print(f"Шлях '{local_dir_path}' не вказує на файл")
 def list_drive_files(drive):
+    total_size = 0
     file_list = drive.ListFile().GetList()
     if not file_list:
-        print("Немає файлів на гугол диску.")
+        print("Немає файлів на Google Диску.")
     else:
-        print("Файли на Google Drive:")
+        print("Файли на Google Диску:")
         for file_drive in file_list:
-            print(file_drive['title'])
+            if 'folder' in file_drive['mimeType']:
+                print(file_drive['title'])
+            else:
+                print(file_drive['title'])
+                try:
+                    file_size = int(file_drive['fileSize'])
+                    total_size += file_size
+                except KeyError:
+                    print(f"Не вдалося отримати розмір для файлу: {file_drive['title']}")
+
+    # Переведення розміру у мегабайти
+    total_size_mb = total_size / (1024 * 1024)
+    print(f"Загальний розмір файлів на диску: {total_size_mb:.2f} МБ")
 
 
 def delete_all_drive_files(drive):
@@ -71,33 +107,66 @@ def delete_all_drive_files(drive):
             file_drive.Delete()
             print(f"File '{file_drive['title']}' deleted.")
 
+def create_directory_if_not_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+def download_file_from_drive(file_drive, local_dir_path_downloaded):
+    try:
+        # Replace invalid characters in the file name
+        safe_file_title = file_drive['title'].replace("/", "_").replace("\\", "_")
+        # Download the file
+        file_drive.GetContentFile(os.path.join(local_dir_path_downloaded, safe_file_title))
+        print(f"File '{safe_file_title}' downloaded.")
+    except Exception as e:
+        print(f"Error downloading file '{file_drive['title']}': {e}")
+
+
+def download_folder_from_drive(drive, folder_drive, local_dir_path_downloaded):
+    try:
+        # Replace invalid characters in the folder name
+        safe_folder_title = folder_drive['title'].replace("/", "_").replace("\\", "_")
+        # Create a local folder for the downloaded contents
+        local_folder_path = os.path.join(local_dir_path_downloaded, safe_folder_title)
+        if not os.path.exists(local_folder_path):
+            os.makedirs(local_folder_path)
+
+        # List all files and folders inside the folder
+        folder_content = drive.ListFile({'q': f"'{folder_drive['id']}' in parents and trashed=false"}).GetList()
+
+        # Recursively download files and folders inside the current folder
+        for item_drive in folder_content:
+            if item_drive['mimeType'] == 'application/vnd.google-apps.folder':
+                download_folder_from_drive(drive, item_drive, local_folder_path)
+            else:
+                download_file_from_drive(item_drive, local_folder_path)
+
+        print(f"Folder '{safe_folder_title}' downloaded.")
+    except Exception as e:
+        print(f"Error downloading folder '{folder_drive['title']}': {e}")
+
 def download_all_from_drive(drive, local_dir_path_downloaded):
     try:
-        os.makedirs(local_dir_path_downloaded)
+        if not os.path.exists(local_dir_path_downloaded):
+            os.makedirs(local_dir_path_downloaded)
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
     file_list = drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
     if not file_list:
-        print("На Диску Google не знайдено файлів для скачування.")
+        print("No files found on Google Drive.")
     else:
-        print("Скачування усіх файлів з Google Drive:")
-        for file_drive in file_list:
-            try:
-                # Заміна недопустимих символів в імені файлу
-                safe_file_title = file_drive['title'].replace("\\", "_")
-
-                # Завантаження інших файлів
-                file_drive.GetContentFile(os.path.join(local_dir_path_downloaded, safe_file_title))
-                print(f"File '{safe_file_title}' downloaded.")
-            except Exception as e:
-                print(f"Помилка під час обробки файлу '{file_drive['title']}': {e}")
+        print("Downloading all files and folders from Google Drive:")
+        for item_drive in file_list:
+            if item_drive['mimeType'] == 'application/vnd.google-apps.folder':
+                download_folder_from_drive(drive, item_drive, local_dir_path_downloaded)
+            else:
+                download_file_from_drive(item_drive, local_dir_path_downloaded)
 
 if __name__ == "__main__":
     credentials_path = "key/aerobic-star-416510-e6f939d408db.json"  # Змініть на шлях до свого JSON-ключа
-    local_dir_path = "content/"  # Змініть на шлях до вашого локального файлу скачування
-    local_dir_path_downloaded = "downloaded/"  # Змініть на шлях до вашого локального файлу загрузка
+    local_dir_path = "../youtube/content"  # Змініть на шлях до вашого локального файлу скачування
+    local_dir_path_downloaded = r"../youtube/downloaded"  # Змініть на шлях до вашого локального файлу загрузка
     drive = authenticate_drive(credentials_path)
     while True:
         print('1- Загрузка на диск')
@@ -107,9 +176,9 @@ if __name__ == "__main__":
         print('5- ехід')
         num = input()
         if num == '1':
-            zip_dir = input("Завантажити як архів натисніть 1 \nЗавантажити як директорію натисніть - 2\n")
+            zip_dir = input("Завантажити як архів натисніть 1 \nЗавантажити як директорію натисніть - 2\nЗавантажити як 1 файл натисніть - 3\n")
             # Загрузка файлу на Google Drive
-            if zip_dir == '1' or zip_dir == '2':
+            if zip_dir == '1' or zip_dir == '2' or zip_dir == '3':
                 upload_to_drive(drive, local_dir_path, int(zip_dir))
         elif num == '2':
             # Завантаження всіх файлів з Google Drive
