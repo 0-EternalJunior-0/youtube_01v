@@ -165,7 +165,7 @@ def download_all_from_drive(drive, local_dir_path_downloaded):
 
 if __name__ == "__main__":
     credentials_path = "key/aerobic-star-416510-e6f939d408db.json"  # Змініть на шлях до свого JSON-ключа
-    local_dir_path = "youtube/content"  # Змініть на шлях до вашого локального файлу скачування
+    local_dir_path = "../youtube_01v/content"  # Змініть на шлях до вашого локального файлу скачування
     local_dir_path_downloaded = r"../youtube/downloaded"  # Змініть на шлях до вашого локального файлу загрузка
     drive = authenticate_drive(credentials_path)
     while True:
