@@ -9,7 +9,7 @@ from zipfile import ZipFile
 def authenticate_drive(credentials_path):
     gauth = GoogleAuth()
     gauth.credentials = ServiceAccountCredentials.from_json_keyfile_name(
-        credentials_path,  # Шлях до вашого JSON-ключа
+        credentials_path, 
         ['https://www.googleapis.com/auth/drive']
     )
     gauth.Authorize()
@@ -18,14 +18,14 @@ def authenticate_drive(credentials_path):
 
 
 def upload_large_file_to_drive(drive, local_file_path, parent_id='root', chunk_size=30 * 1024 * 1024):
-    # Get file name and size
+ 
     file_name = os.path.basename(local_file_path)
     file_size = os.path.getsize(local_file_path)
 
-    # Calculate number of chunks
+  
     num_chunks = file_size // chunk_size + (1 if file_size % chunk_size != 0 else 0)
 
-    # Create a folder on Drive to store the chunks
+    
     folder_metadata = {
         'title': file_name,
         'mimeType': 'application/vnd.google-apps.folder',
@@ -34,20 +34,18 @@ def upload_large_file_to_drive(drive, local_file_path, parent_id='root', chunk_s
     folder = drive.CreateFile(folder_metadata)
     folder.Upload()
 
-    # Upload chunks
     with open(local_file_path, 'rb') as file:
         for i in range(num_chunks):
             start_byte = i * chunk_size
             end_byte = min((i + 1) * chunk_size, file_size)
             chunk_data = file.read(chunk_size)
 
-            # Create chunk file
+            
             chunk_file_name = f'{file_name}.part{i + 1}'
             chunk_file_path = os.path.join('/tmp', chunk_file_name)
             with open(chunk_file_path, 'wb') as chunk_file:
                 chunk_file.write(chunk_data)
 
-            # Upload chunk file
             chunk_metadata = {
                 'title': chunk_file_name,
                 'parents': [{'id': folder['id']}]
@@ -56,7 +54,7 @@ def upload_large_file_to_drive(drive, local_file_path, parent_id='root', chunk_s
             chunk.SetContentFile(chunk_file_path)
             chunk.Upload()
 
-            # Remove temporary chunk file
+            
             os.remove(chunk_file_path)
 
     print(f'File "{file_name}" uploaded successfully.')
@@ -161,17 +159,17 @@ def download_file_from_drive(file_drive, local_dir_path_downloaded):
 
 def download_folder_from_drive(drive, folder_drive, local_dir_path_downloaded):
     try:
-        # Replace invalid characters in the folder name
+        
         safe_folder_title = folder_drive['title'].replace("/", "_").replace("\\", "_")
         # Create a local folder for the downloaded contents
         local_folder_path = os.path.join(local_dir_path_downloaded, safe_folder_title)
         if not os.path.exists(local_folder_path):
             os.makedirs(local_folder_path)
 
-        # List all files and folders inside the folder
+        
         folder_content = drive.ListFile({'q': f"'{folder_drive['id']}' in parents and trashed=false"}).GetList()
 
-        # Recursively download files and folders inside the current folder
+       
         for item_drive in folder_content:
             if item_drive['mimeType'] == 'application/vnd.google-apps.folder':
                 download_folder_from_drive(drive, item_drive, local_folder_path)
@@ -202,9 +200,9 @@ def download_all_from_drive(drive, local_dir_path_downloaded):
                 download_file_from_drive(item_drive, local_dir_path_downloaded)
 
 if __name__ == "__main__":
-    credentials_path = "key/aerobic-star-416510-e6f939d408db.json"  # Змініть на шлях до свого JSON-ключа
-    local_dir_path = "../youtube_01v/content"  # Змініть на шлях до вашого локального файлу скачування
-    local_dir_path_downloaded = r"../youtube/downloaded"  # Змініть на шлях до вашого локального файлу загрузка
+    credentials_path = "key/aerobic-star-416510-e6f939d408db.json"  #
+    local_dir_path = "../youtube_01v/content"  
+    local_dir_path_downloaded = r"../youtube/downloaded"  
     drive = authenticate_drive(credentials_path)
     while True:
         print('1- Загрузка на диск')
@@ -215,17 +213,17 @@ if __name__ == "__main__":
         num = input()
         if num == '1':
             zip_dir = input("Завантажити як архів натисніть 1 \nЗавантажити як директорію натисніть - 2\nЗавантажити як 1 файл натисніть - 3\n")
-            # Загрузка файлу на Google Drive
+            
             if zip_dir == '1' or zip_dir == '2' or zip_dir == '3':
                 upload_to_drive(drive, local_dir_path, int(zip_dir))
         elif num == '2':
-            # Завантаження всіх файлів з Google Drive
+            
             download_all_from_drive(drive, local_dir_path_downloaded)
         elif num == '3':
-            # Виведення списку файлів на Google Drive
+           
             list_drive_files(drive)
         elif num == '4':
-            # Видалення усіх файлів на Google Drive
+            
             delete_all_drive_files(drive)
         elif num == '5':
             sys.exit()
