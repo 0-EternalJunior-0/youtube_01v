@@ -1,13 +1,11 @@
 {
-  "type": "service_account",
-  "project_id": "aerobic-star-416510",
-  "private_key_id": "e6f939d408dbff78b6b235d0610fb453d9fd1f68",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvMRorvpOCxRiM\nmP+2Pil7iBSu1oSQ67T9pDfVhtD6qLHeqAZPIAXJtS6QrAyYB2aaXadF8r0/IF0I\nNO2aaCN5qNQBBowbHq0rsTk8YKiy0UrQjrBe758CuVy/FAWg6oC2cw1OwQ13inX4\n9Ewzx3xP9VVm47Y006UpS6nR7hJWyHFw32SpGJGFD06MN16D8s3d3Zqw3rjd32Qz\nbMT1irO7xKYq4IMWxuOYwS/SXN0m6KZ+AiTRNzM2vHkNdOCj0ytkEebimjHf4Jnr\nMVYbMLRVMG3q0k+HtZG70hbE9XzuBFR5etFnJOnhty+JSI+wivUIUJtNCnBnSFpd\n1+4IVq1NAgMBAAECggEAB0XdEpLU63leNW85zAMhoSJUy+G8KCRsFsy+xD6jP1ZK\nG0NTdVNDGkAYALAiNIK3vjg3TdHJcuAkX8clINaQ60FYgWBk6AO3Tn7xfT580mU0\nG2gvdAmAZIV1QoarKYzpFTa9umOMuRLTWfReYEnrfb0Vs6ThanXQDGC62iwgsJLy\nr4sFD8mGRJUgbFOKkJ6r3Uyz6ODjWsOzQDOx7WSOwzbzjm/v3Y7m/uDAh+YC06OV\nAzmT0AK6MfoU580LLKPPDw1ZVSBC+ij0LtgcMJb7azWragwQbrhYfn1t0FuJhAO+\nfK8Z6Kc3e98mW8Vi9B5LwGv80Me2at01pps4vxjDgQKBgQDcFEbfk14oPRhWXrzh\nEm7mdyzPSADjHTaCJY3TdrRXS8GmwoVoEz9O/36L6hUA9pOx3jOUbqNOPmffWBm6\n+9bnylkC/QG3JK3/Fndf8goZtcFHhkPi9DXUCjFwplbacVhYYz5axhs9jKy+j6Sd\nwssznHdtu2qz6yQaqEfbtypKjQKBgQDLyUOGWr87qfkTnD08a0rRo9q7K75gXbce\nMGiDvJLOYyXX3HoqXss6g/ZlQVOoNPXeijQ4EfH/J+WZna/aMd8ayVLIDpVRTMRG\ntizH1EMpGY8jtaXpaVGnFtngTIEVHbw+cFwnnRou3n1CvFWU6rlXWRxUN095jI7w\npBoEV6ydwQKBgQCJHGDjXa6lpxqIhNFr784D62+RXCyhUkvpXXg0rJnCYUIuoLX4\nlzU0BF1U0etwBC8T+3lrGlrHnn2cWgj9w3SqSBiYkgQFk+aLK/YHYoYEaoYWB4I3\n3SnEBu2yXw9xXHhL6NiqOQ4zlHby6g8G8psidnK5fLAHk5GUwg6yxjSk6QKBgEd6\nSZf3fnnj7XxmYcgubejISzE5b6YHWPJa0l3ap7eCaUSkjakM5MWagbMUTc6C/PZY\njWZZTQNNMChIeeTTd0jC8qk/DDqe7X1L6rsQhZoF4AILda1ABqbPyg31Z5VLf7p6\n2KgAX62u1kqxGmeISQgNNnWHjPW6Smy3cnSxd9dBAoGAYCmVL5R7RRBADrjX8ykr\nd57tZGU94wiKlfeGwUWNSwIHxeLjmp/8cBEZXKUEUrLDQKRIrYcnFbmcvTfUvuwx\nA8vLhxt4wThfPLhSagza7V9M/R+r6SAw+XMXxv1G3YKZlNNsI0YyAUHEyIgaN5Uc\n6J23ZIJra0lDEksnP3ZVaio=\n-----END PRIVATE KEY-----\n",
-  "client_email": "zhomyruk-yaroslav-v@aerobic-star-416510.iam.gserviceaccount.com",
-  "client_id": "118243425968097744534",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/zhomyruk-yaroslav-v%40aerobic-star-416510.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
+  "type": 
+  "project_id": 
+  "private_key_i
+  "client_email": 
+  "client_id": 
+  "auth_uri": 
+  "token_uri": 
+  "auth_provider_x509_cert_url": 
+  "client_x509_cert_url": 
+  "universe_domain": 
